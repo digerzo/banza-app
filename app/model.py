@@ -12,7 +12,6 @@ class TipoMovimiento(Enum):
     INGRESO = "INGRESO"   
 
 
-
 class Categoria(BaseModel):
     """Modelo base de categoría"""
 
