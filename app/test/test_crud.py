@@ -14,6 +14,22 @@ def fixture_session():
     finally:
         db.close()
 
+def popular_clientes(session):
+    clientes = [
+        orm.Cliente(nombre="carlos"),
+        orm.Cliente(nombre="alberto"),
+        orm.Cliente(nombre="saul"),
+    ]
+    
+    for cliente in clientes:
+        session.add(cliente)
+    session.commit()
+
+
+def limpiar_clientes(session):
+    session.execute("delete from clientes")
+    session.commit()
+
 
 def test_get_cliente_por_id(session):
     db_cliente = orm.Cliente(nombre="carlos")
@@ -27,9 +43,7 @@ def test_get_cliente_por_id(session):
     cliente = crud.get_cliente(session, db_cliente.id)
     assert cliente == db_cliente
     
-    # work around por ahora
-    session.execute("delete from clientes")
-    session.commit()
+    limpiar_clientes(session)
 
 
 def test_crear_cliente(session):
@@ -39,8 +53,14 @@ def test_crear_cliente(session):
 
     assert rows == [("carlos",)]
 
-    # work around por ahora
-    session.execute("delete from clientes")
-    session.commit()
+    limpiar_clientes(session)
+
+
+def test_read_clientes(session):
+    popular_clientes(session)
     
-    
+    clientes = crud.get_clientes(session)
+
+    assert len(clientes) == 3
+
+    limpiar_clientes(session)

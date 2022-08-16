@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from . import orm, model
 
 
+def get_clientes(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(orm.Cliente).offset(skip).limit(limit).all()
+
 def get_cliente(db: Session, user_id: int):
     return db.query(orm.Cliente).filter(orm.Cliente.id == user_id).first()
 
