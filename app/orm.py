@@ -1,43 +1,34 @@
-from xmlrpc.client import DateTime
-from sqlalchemy import Table, Column, Integer, String, ForeignKey
-from sqlalchemy.orm import registry, relationship
+from sqlalchemy.types import DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Float
+from sqlalchemy.orm import relationship
+from .database import Base
 
-from .model import Cliente, Cuenta, Movimiento
 
-mapper_registry = registry()
+class Cliente(Base):
+    __tablename__ = "clientes"
 
-tabla_cliente = Table(
-    'cliente',
-    mapper_registry.metadata,
-    Column('id', Integer, primary_key=True),
-    Column('nombre', String(50)),
-)
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String)
 
-tabla_cuenta = Table(
-    'cuenta',
-    mapper_registry.metadata,
-    Column('id', Integer, primary_key=True),
-    Column('id_cliente', Integer, ForeignKey('cliente.id'))
-)
+    cuentas = relationship("Cuenta", back_populates="duenio")
 
-tabla_movimiento = Table(
-    'movimiento',
-    mapper_registry.metadata,
-    Column('id', Integer, primary_key=True),
-    Column('id_cuenta', Integer, ForeignKey('cuenta.id')),
-    Column('tipo', String(50)),
-    Column('fecha', DateTime),
-)
 
-def start_mapers():
+class Cuenta(Base):
+    __tablename__ = "cuentas"
 
-    mapper_registry.map_imperatively(Cliente, tabla_cliente, properties={
-        'cuentas' : relationship(Cuenta, backref='cliente', order_by=tabla_cuenta.c.id)
-    })
+    id = Column(Integer, primary_key=True, index=True)
+    id_cliente = Column(Integer, ForeignKey("clientes.id"))
 
-    mapper_registry.map_imperatively(Cuenta, tabla_cuenta, properties={
-        'movimientos' : relationship(Movimiento, backref='cuenta', order_by=tabla_movimiento.c.id)
-    })
+    duenio = relationship("Cliente", back_populates="cuentas")
+    movimientos = relationship("Movimiento", back_populates="cuenta")
 
-    mapper_registry.map_imperatively(Movimiento, tabla_movimiento)
+class Movimiento(Base):
+    __tablename__ = "movimientos"
 
+    id = Column(Integer, primary_key=True, index=True)
+    id_cuenta = Column(Integer, ForeignKey("cuentas.id"))
+    tipo = Column(String)
+    importe = Column(Float)
+    fecha = Column(DateTime)
+
+    cuenta = relationship("Cuenta", back_populates="movimientos")

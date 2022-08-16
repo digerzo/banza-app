@@ -13,6 +13,7 @@ def test_crear_modelo_completo():
     cuenta = Cuenta(movimientos=[movimiento])
 
     cliente = Cliente(
+        id=1,
         nombre="Juan",
         categorias=[categoria],
         cuentas=[cuenta]
