@@ -1,0 +1,64 @@
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from fastapi.testclient import TestClient
+
+from app import model, orm
+from app.main import app, get_db
+from .utils import popular_clientes, limpiar_clientes
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def override_get_db():
+    try:
+        db = TestingSessionLocal()
+        yield db
+    finally:
+        db.close()
+
+app.dependency_overrides[get_db] = override_get_db
+orm.Base.metadata.create_all(bind=engine)
+client = TestClient(app)
+
+
+@pytest.fixture(name="popular_limpiar_db")
+def fixture_popular_limpiar_db():
+    db = TestingSessionLocal()
+    ids = popular_clientes(db)
+    yield ids
+    limpiar_clientes(db)
+    db.close()
+
+
+def test_read_main():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"Hello": "World"}
+
+
+def test_read_clientes(popular_limpiar_db):
+    response = client.get("/clientes/")
+    assert response.status_code == 200
+    assert len(response.json()) == 3
+
+
+def test_get_cliente(popular_limpiar_db):
+    ids = popular_limpiar_db
+    id_cliente = ids[0]
+    response = client.get("/clientes/" + str(id_cliente))
+    assert response.status_code == 200
+    assert response.json()["nombre"] == "carlos"
+
+
+def test_crear_cliente(popular_limpiar_db):
+    cliente = model.CrearCliente(nombre="Juan")
+    response = client.post("/clientes/", data=cliente.json())
+    assert response.status_code == 200
+    assert response.json()["nombre"] == "Juan"
+    assert isinstance(response.json()["id"], int)
+
