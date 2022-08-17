@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
 from . import crud, model, orm
@@ -29,7 +29,10 @@ def read_clientes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 
 @app.get("/clientes/{id_cliente}", response_model=model.Cliente)
 def obtener_cliente(id_cliente: int, db: Session = Depends(get_db)):
-    return crud.get_cliente(db, id_cliente)
+    db_cliente = crud.get_cliente(db, id_cliente)
+    if db_cliente is None:
+        raise HTTPException(status_code=404, detail="Cliente not found")
+    return db_cliente
 
 
 @app.post("/clientes/", response_model=model.Cliente)

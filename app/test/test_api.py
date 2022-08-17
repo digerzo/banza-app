@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -53,6 +54,13 @@ def test_get_cliente(popular_limpiar_db):
     response = client.get("/clientes/" + str(id_cliente))
     assert response.status_code == 200
     assert response.json()["nombre"] == "carlos"
+
+
+def test_get_cliente_not_found(popular_limpiar_db):
+    random_id = 112233445566778899
+    response = client.get("/clientes/" + str(random_id))
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Cliente not found"
 
 
 def test_crear_cliente(popular_limpiar_db):
