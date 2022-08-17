@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from app import orm
 
 def popular_clientes(session) -> list[int]:
@@ -43,11 +44,23 @@ def popular_cuentas(db, id_cliente):
     for c in cuentas:
         db.add(c)
     db.commit()
+    cuenta = cuentas[0]
+    db.refresh(cuenta)
+    cuenta.movimientos.append(
+        orm.Movimiento(id_cuenta=cuenta.id, tipo="INGRESO", importe=10500, fecha=datetime.now())
+    )   
+    cuenta.movimientos.append(
+        orm.Movimiento(id_cuenta=cuenta.id, tipo="EGRESO", importe=604.50, fecha=datetime.now())
+    )   
+
+    db.commit()
 
 
 def limpiar_cuentas(db):
     cuentas = db.query(orm.Cuenta).all()
     for c in cuentas:
+        for m in c.movimientos:
+            db.delete(m)
         db.delete(c)
     db.commit()
 

@@ -62,3 +62,7 @@ class Cliente(ClienteBase):
 
 class AgregarClienteACategoria(BaseModel):
     categoria: str
+
+class CuentaConSaldo(BaseModel):
+    id_cuenta: int
+    saldo: float

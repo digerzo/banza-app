@@ -28,3 +28,6 @@ def agregar_cliente_categoria(db: Session, cliente: orm.Cliente, categoria: orm.
     db.commit()
     db.refresh(cliente)
     return cliente
+
+def get_cuenta(db: Session, id_cuenta: int):
+    return db.query(orm.Cuenta).filter(orm.Cuenta.id == id_cuenta).first()

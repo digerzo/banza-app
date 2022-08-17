@@ -1,3 +1,4 @@
+from pdb import Pdb
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -123,3 +124,32 @@ def test_consulta_cuentas_cliente_not_found():
     idc = 12345
     response = client.get(f"/clientes/{str(idc)}/cuentas/")
     assert response.status_code == 404
+
+
+def test_get_saldo_cuenta_con_movimientos(popular_limpiar_db):
+    id_cliente = popular_limpiar_db[0]
+    id_cuenta = 1
+    response = client.get(f"/clientes/{str(id_cliente)}/cuentas/{str(id_cuenta)}/saldo/")
+    assert response.status_code == 200
+    assert isinstance(response.json()["saldo"], float)
+
+
+def test_get_saldo_cuenta_sin_movimientos(popular_limpiar_db):
+    id_cliente = popular_limpiar_db[0]
+    id_cuenta = 2
+    response = client.get(f"/clientes/{str(id_cliente)}/cuentas/{str(id_cuenta)}/saldo/")
+    assert response.status_code == 200
+    assert isinstance(response.json()["saldo"], float)
+    assert response.json()["saldo"] == 0
+
+
+def test_get_saldo_cuenta_cliente_not_found(popular_limpiar_db):
+    idc = 1234
+    response = client.get(f"/clientes/{str(idc)}/cuentas/2/saldo/")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Cliente not found"
+
+    id_cuenta = 91328
+    response = client.get(f"/clientes/1/cuentas/{str(id_cuenta)}/saldo/")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Cuenta not found"

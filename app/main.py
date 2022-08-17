@@ -72,3 +72,21 @@ def read_cliente_cuentas(id_cliente: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Cliente not found")
     
     return db_cliente.cuentas
+
+
+@app.get("/clientes/{id_cliente}/cuentas/{id_cuenta}/saldo/", response_model=model.CuentaConSaldo)
+def consultar_saldo_cuenta_cliente(id_cliente: int, id_cuenta: int, db: Session = Depends(get_db)):
+    db_cliente = crud.get_cliente(db, id_cliente)
+    if db_cliente is None:
+        raise HTTPException(status_code=404, detail="Cliente not found")
+    
+    db_cuenta = crud.get_cuenta(db, id_cuenta)
+    if db_cuenta is None:
+        raise HTTPException(status_code=404, detail="Cuenta not found")
+
+    saldo = 0
+    for movimiento in db_cuenta.movimientos:
+        saldo += movimiento.importe
+    
+    return model.CuentaConSaldo(id_cuenta=db_cuenta.id, saldo=saldo)
+
