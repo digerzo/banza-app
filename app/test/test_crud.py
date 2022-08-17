@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app import crud, model, orm
+from .utils import popular_clientes, limpiar_clientes
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
 
@@ -20,22 +21,6 @@ def fixture_session():
         yield db
     finally:
         db.close()
-
-def popular_clientes(session):
-    clientes = [
-        orm.Cliente(nombre="carlos"),
-        orm.Cliente(nombre="alberto"),
-        orm.Cliente(nombre="saul"),
-    ]
-    
-    for cliente in clientes:
-        session.add(cliente)
-    session.commit()
-
-
-def limpiar_clientes(session):
-    session.execute("delete from clientes")
-    session.commit()
 
 
 def test_get_cliente_por_id(session):
