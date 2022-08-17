@@ -1,6 +1,8 @@
 from sqlalchemy.types import DateTime
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table, Enum
 from sqlalchemy.orm import relationship
+
+from .model import TipoMovimiento
 from .database import Base
 
 
@@ -35,7 +37,7 @@ class Movimiento(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     id_cuenta = Column(Integer, ForeignKey("cuentas.id"))
-    tipo = Column(String)
+    tipo = Column(Enum(TipoMovimiento))
     importe = Column(Float)
     fecha = Column(DateTime)
 

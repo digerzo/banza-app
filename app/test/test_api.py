@@ -1,4 +1,6 @@
+from datetime import datetime
 from pdb import Pdb
+from urllib import response
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -151,5 +153,19 @@ def test_get_saldo_cuenta_cliente_not_found(popular_limpiar_db):
 
     id_cuenta = 91328
     response = client.get(f"/clientes/1/cuentas/{str(id_cuenta)}/saldo/")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Cuenta not found"
+
+
+def test_registrar_movimiento(popular_limpiar_db):
+    movimiento = model.CrearMovimiento(id_cuenta=1, tipo="INGRESO", importe=1000, fecha=datetime.now())
+    response = client.post("/movimientos/", data=movimiento.json())
+    assert response.status_code == 200
+    assert isinstance(response.json()["id"], int)
+
+
+def test_registrar_movimiento_cuenta_not_found():
+    movimiento = model.CrearMovimiento(id_cuenta=1, tipo="INGRESO", importe=1000, fecha=datetime.now())
+    response = client.post("/movimientos/", data=movimiento.json())
     assert response.status_code == 404
     assert response.json()["detail"] == "Cuenta not found"

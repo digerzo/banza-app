@@ -31,3 +31,10 @@ def agregar_cliente_categoria(db: Session, cliente: orm.Cliente, categoria: orm.
 
 def get_cuenta(db: Session, id_cuenta: int):
     return db.query(orm.Cuenta).filter(orm.Cuenta.id == id_cuenta).first()
+
+def crear_movimiento(db: Session, movimiento: model.CrearMovimiento):
+    db_movimiento = orm.Movimiento(**movimiento.dict())
+    db.add(db_movimiento)
+    db.commit()
+    db.refresh(db_movimiento)
+    return db_movimiento

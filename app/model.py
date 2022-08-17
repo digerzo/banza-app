@@ -22,17 +22,23 @@ class Categoria(BaseModel):
         orm_mode = True
 
 
-class Movimiento(BaseModel):
+class MovimientoBase(BaseModel):
     """Modelo base de movimiento"""
     
+    id_cuenta: int
     tipo: TipoMovimiento
     importe: float
     fecha: datetime
+
+class Movimiento(MovimientoBase):
+    id: int
 
     class Config:
         orm_mode = True
 
 
+class CrearMovimiento(MovimientoBase):
+    pass
 
 class Cuenta(BaseModel):
     """Modelo base de cuenta"""

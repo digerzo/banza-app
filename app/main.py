@@ -90,3 +90,12 @@ def consultar_saldo_cuenta_cliente(id_cliente: int, id_cuenta: int, db: Session 
     
     return model.CuentaConSaldo(id_cuenta=db_cuenta.id, saldo=saldo)
 
+
+@app.post("/movimientos/", response_model=model.Movimiento)
+def registrar_movimiento(movimiento: model.CrearMovimiento, db: Session = Depends(get_db)):
+    db_cuenta = crud.get_cuenta(db, movimiento.id_cuenta)
+    if db_cuenta is None:
+        raise HTTPException(status_code=404, detail="Cuenta not found")
+    
+    return crud.crear_movimiento(db, movimiento)
+
