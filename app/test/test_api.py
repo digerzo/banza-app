@@ -70,3 +70,17 @@ def test_crear_cliente(popular_limpiar_db):
     assert response.json()["nombre"] == "Juan"
     assert isinstance(response.json()["id"], int)
 
+
+def test_eliminar_cliente(popular_limpiar_db):
+    id_eliminar = popular_limpiar_db[0]
+    response = client.delete("/clientes/" + str(id_eliminar))
+    assert response.status_code == 200
+    response = client.get("/clientes/" + str(id_eliminar))
+    assert response.status_code == 404
+
+
+def test_eliminar_cliente_not_found(popular_limpiar_db):
+    id_eliminar = 123123
+    response = client.delete("/clientes/" + str(id_eliminar))
+    assert response.status_code == 404
+

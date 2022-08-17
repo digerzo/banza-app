@@ -15,3 +15,7 @@ def crear_cliente(db: Session, cliente: model.CrearCliente) -> orm.Cliente:
     db.commit()
     db.refresh(db_cliente)
     return db_cliente
+
+def eliminar_cliente(db: Session, cliente: orm.Cliente):
+    db.delete(cliente)
+    db.commit()

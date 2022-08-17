@@ -38,3 +38,12 @@ def obtener_cliente(id_cliente: int, db: Session = Depends(get_db)):
 @app.post("/clientes/", response_model=model.Cliente)
 def crear_cliente(cliente: model.CrearCliente, db: Session = Depends(get_db)):
     return crud.crear_cliente(db=db, cliente=cliente)
+
+
+@app.delete("/clientes/{id_cliente}")
+def eliminar_cliente(id_cliente: int, db: Session = Depends(get_db)):
+    db_cliente = crud.get_cliente(db, id_cliente)
+    if db_cliente is None:
+        raise HTTPException(status_code=404, detail="Cliente not found")
+    return crud.eliminar_cliente(db, db_cliente)
+
