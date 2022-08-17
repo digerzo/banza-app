@@ -1,14 +1,21 @@
 import pytest
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from app import crud, model, orm
-from app.database import SessionLocal, engine
+
+SQLALCHEMY_DATABASE_URL = "sqlite://"
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 orm.Base.metadata.create_all(bind=engine)
 
 @pytest.fixture(name="session")
 def fixture_session():
-    db = SessionLocal()
+    db = TestingSessionLocal()
     try:
         yield db
     finally:
