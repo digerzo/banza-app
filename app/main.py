@@ -63,3 +63,12 @@ def agregar_cliente_categoria(
         raise HTTPException(status_code=404, detail="Categoria not found")
         
     return crud.agregar_cliente_categoria(db, db_cliente, db_categoria)
+
+
+@app.get("/clientes/{id_cliente}/cuentas/", response_model=list[model.Cuenta])
+def read_cliente_cuentas(id_cliente: int, db: Session = Depends(get_db)):
+    db_cliente = crud.get_cliente(db, id_cliente)
+    if db_cliente is None:
+        raise HTTPException(status_code=404, detail="Cliente not found")
+    
+    return db_cliente.cuentas

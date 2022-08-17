@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -6,7 +5,7 @@ from fastapi.testclient import TestClient
 
 from app import model, orm
 from app.main import app, get_db
-from .utils import popular_clientes, limpiar_clientes, popular_categorias, limpiar_categorias
+from . import utils
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
 engine = create_engine(
@@ -30,11 +29,13 @@ client = TestClient(app)
 @pytest.fixture(name="popular_limpiar_db")
 def fixture_popular_limpiar_db():
     db = TestingSessionLocal()
-    popular_categorias(db)
-    ids = popular_clientes(db)
+    utils.popular_categorias(db)
+    ids = utils.popular_clientes(db)
+    utils.popular_cuentas(db, ids[0])
     yield ids
-    limpiar_clientes(db)
-    limpiar_categorias(db)
+    utils.limpiar_cuentas(db)
+    utils.limpiar_clientes(db)
+    utils.limpiar_categorias(db)
     db.close()
 
 
@@ -110,3 +111,15 @@ def test_agregar_cliente_a_categoria_cliente_not_found(popular_limpiar_db):
     assert response.status_code == 404
     assert response.json()["detail"] == "Categoria not found"
 
+
+def test_consulta_cuentas_cliente(popular_limpiar_db):
+    id_cliente = popular_limpiar_db[0]
+    response = client.get(f"/clientes/{str(id_cliente)}/cuentas/")
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+
+def test_consulta_cuentas_cliente_not_found():
+    idc = 12345
+    response = client.get(f"/clientes/{str(idc)}/cuentas/")
+    assert response.status_code == 404

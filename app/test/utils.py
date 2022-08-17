@@ -33,3 +33,21 @@ def limpiar_categorias(db):
     for c in cats:
         db.delete(c)
     db.commit()
+
+
+def popular_cuentas(db, id_cliente):
+    cuentas = [
+        orm.Cuenta(id_cliente=id_cliente),
+        orm.Cuenta(id_cliente=id_cliente)
+        ]
+    for c in cuentas:
+        db.add(c)
+    db.commit()
+
+
+def limpiar_cuentas(db):
+    cuentas = db.query(orm.Cuenta).all()
+    for c in cuentas:
+        db.delete(c)
+    db.commit()
+
