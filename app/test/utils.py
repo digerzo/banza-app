@@ -16,3 +16,20 @@ def popular_clientes(session) -> list[int]:
 def limpiar_clientes(session):
     session.execute("delete from clientes")
     session.commit()
+
+
+def popular_categorias(db):
+    categorias = [
+        orm.Categoria(nombre="Bronce"),
+        orm.Categoria(nombre="Silver"),
+        orm.Categoria(nombre="Gold"),
+    ]
+    for c in categorias:
+        db.add(c)
+    db.commit()
+
+def limpiar_categorias(db):
+    cats = db.query(orm.Categoria).all()
+    for c in cats:
+        db.delete(c)
+    db.commit()

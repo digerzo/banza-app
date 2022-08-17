@@ -8,7 +8,7 @@ def test_crear_modelo_completo():
         fecha=datetime.now()
     )
 
-    categoria = Categoria(nombre="Gold")
+    categoria = Categoria(id=1, nombre="Gold")
 
     cuenta = Cuenta(movimientos=[movimiento])
 

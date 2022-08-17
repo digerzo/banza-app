@@ -15,6 +15,7 @@ class TipoMovimiento(Enum):
 class Categoria(BaseModel):
     """Modelo base de categoría"""
 
+    id: int
     nombre: str
 
     class Config:
@@ -58,3 +59,6 @@ class Cliente(ClienteBase):
     
     class Config:
         orm_mode = True
+
+class AgregarClienteACategoria(BaseModel):
+    categoria: str

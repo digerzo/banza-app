@@ -19,3 +19,12 @@ def crear_cliente(db: Session, cliente: model.CrearCliente) -> orm.Cliente:
 def eliminar_cliente(db: Session, cliente: orm.Cliente):
     db.delete(cliente)
     db.commit()
+
+def get_categoria_nombre(db: Session, nombre_categoria: str):
+    return db.query(orm.Categoria).filter(orm.Categoria.nombre == nombre_categoria).first()
+
+def agregar_cliente_categoria(db: Session, cliente: orm.Cliente, categoria: orm.Categoria):
+    cliente.categorias.append(categoria)
+    db.commit()
+    db.refresh(cliente)
+    return cliente

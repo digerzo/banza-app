@@ -47,3 +47,19 @@ def eliminar_cliente(id_cliente: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Cliente not found")
     return crud.eliminar_cliente(db, db_cliente)
 
+
+@app.post("/clientes/{id_cliente}/categorias/", response_model=model.Cliente)
+def agregar_cliente_categoria(
+            id_cliente: int, 
+            agregar_categoria: model.AgregarClienteACategoria, 
+            db: Session = Depends(get_db)
+        ):
+    db_cliente = crud.get_cliente(db, id_cliente)
+    if db_cliente is None:
+        raise HTTPException(status_code=404, detail="Cliente not found")
+    
+    db_categoria = crud.get_categoria_nombre(db, agregar_categoria.categoria)
+    if db_categoria is None:
+        raise HTTPException(status_code=404, detail="Categoria not found")
+        
+    return crud.agregar_cliente_categoria(db, db_cliente, db_categoria)

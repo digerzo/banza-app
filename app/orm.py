@@ -1,8 +1,15 @@
 from sqlalchemy.types import DateTime
-from sqlalchemy import Column, Integer, String, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from sqlalchemy.orm import relationship
 from .database import Base
 
+
+categoria_cliente = Table(
+    "categoria_cliente",
+    Base.metadata,
+    Column("id_cliente", ForeignKey("clientes.id"), primary_key=True),
+    Column("id_categoria", ForeignKey("categorias.id"), primary_key=True),
+)
 
 class Cliente(Base):
     __tablename__ = "clientes"
@@ -10,6 +17,7 @@ class Cliente(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String)
 
+    categorias = relationship("Categoria", secondary=categoria_cliente)
     cuentas = relationship("Cuenta", back_populates="duenio")
 
 
@@ -32,3 +40,9 @@ class Movimiento(Base):
     fecha = Column(DateTime)
 
     cuenta = relationship("Cuenta", back_populates="movimientos")
+
+class Categoria(Base):
+    __tablename__ = "categorias"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String)
