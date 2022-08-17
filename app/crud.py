@@ -9,7 +9,7 @@ def get_clientes(db: Session, skip: int = 0, limit: int = 100):
 def get_cliente(db: Session, user_id: int):
     return db.query(orm.Cliente).filter(orm.Cliente.id == user_id).first()
 
-def crear_cliente(db: Session, cliente: model.CrearCliente) -> model.Cliente:
+def crear_cliente(db: Session, cliente: model.CrearCliente) -> orm.Cliente:
     db_cliente = orm.Cliente(nombre=cliente.nombre)
     db.add(db_cliente)
     db.commit()
