@@ -1,6 +1,8 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
+from .exceptions import SaldoInsuficiente
+
 from . import crud, model, orm
 from .database import SessionLocal, engine
 
@@ -84,11 +86,9 @@ def consultar_saldo_cuenta_cliente(id_cliente: int, id_cuenta: int, db: Session 
     if db_cuenta is None:
         raise HTTPException(status_code=404, detail="Cuenta not found")
 
-    saldo = 0
-    for movimiento in db_cuenta.movimientos:
-        saldo += movimiento.importe
+    cuenta = model.Cuenta.crear_desde_db(db_cuenta)
     
-    return model.CuentaConSaldo(id_cuenta=db_cuenta.id, saldo=saldo)
+    return model.CuentaConSaldo(id_cuenta=db_cuenta.id, saldo=cuenta.saldo())
 
 
 @app.post("/movimientos/", response_model=model.Movimiento)
@@ -96,6 +96,12 @@ def registrar_movimiento(movimiento: model.CrearMovimiento, db: Session = Depend
     db_cuenta = crud.get_cuenta(db, movimiento.id_cuenta)
     if db_cuenta is None:
         raise HTTPException(status_code=404, detail="Cuenta not found")
+
+    cuenta = model.Cuenta.crear_desde_db(db_cuenta)
+    try:
+        cuenta.agregar_movimiento(movimiento)
+    except SaldoInsuficiente as e:
+        raise HTTPException(status_code=409, detail="Saldo insuficiente") from e
     
     return crud.crear_movimiento(db, movimiento)
 

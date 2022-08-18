@@ -164,6 +164,13 @@ def test_registrar_movimiento(popular_limpiar_db):
     assert isinstance(response.json()["id"], int)
 
 
+def test_registrar_movimiento_saldo_insuficiente(popular_limpiar_db):
+    movimiento = model.CrearMovimiento(id_cuenta=1, tipo="EGRESO", importe=99999, fecha=datetime.now())
+    response = client.post("/movimientos/", data=movimiento.json())
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Saldo insuficiente"
+
+
 def test_registrar_movimiento_cuenta_not_found():
     movimiento = model.CrearMovimiento(id_cuenta=1, tipo="INGRESO", importe=1000, fecha=datetime.now())
     response = client.post("/movimientos/", data=movimiento.json())

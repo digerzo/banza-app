@@ -32,6 +32,9 @@ class MovimientoBase(BaseModel):
     importe: float
     fecha: datetime
 
+    def impacto(self) -> float:
+        return self.importe if self.tipo == TipoMovimiento.INGRESO else -self.importe       
+
 class Movimiento(MovimientoBase):
     id: int
 
@@ -46,10 +49,7 @@ class Movimiento(MovimientoBase):
             tipo=TipoMovimiento(db_movimiento.tipo),
             importe=db_movimiento.importe,
             fecha=db_movimiento.fecha
-        )
-
-    def impacto(self) -> float:
-        return self.importe if self.tipo == TipoMovimiento.INGRESO else -self.importe        
+        ) 
 
 class CrearMovimiento(MovimientoBase):
     pass
