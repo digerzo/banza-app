@@ -38,3 +38,6 @@ def crear_movimiento(db: Session, movimiento: model.CrearMovimiento):
     db.commit()
     db.refresh(db_movimiento)
     return db_movimiento
+
+def get_movimiento(db: Session, id_movimiento: int):
+    return db.query(orm.Movimiento).filter(orm.Movimiento.id == id_movimiento).first()

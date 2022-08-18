@@ -99,3 +99,11 @@ def registrar_movimiento(movimiento: model.CrearMovimiento, db: Session = Depend
     
     return crud.crear_movimiento(db, movimiento)
 
+
+@app.get("/movimientos/{id_movimiento}", response_model=model.Movimiento)
+def consultar_movimiento(id_movimiento: int, db: Session = Depends(get_db)):
+    db_movimiento = crud.get_movimiento(db, id_movimiento)
+    if db_movimiento is None:
+        raise HTTPException(status_code=404, detail="Movimiento not found")
+
+    return db_movimiento

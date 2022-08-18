@@ -169,3 +169,17 @@ def test_registrar_movimiento_cuenta_not_found():
     response = client.post("/movimientos/", data=movimiento.json())
     assert response.status_code == 404
     assert response.json()["detail"] == "Cuenta not found"
+
+
+def test_consultar_movimiento(popular_limpiar_db):
+    id_movimiento = 1  # por la forma de llenar la db puedo asumir esto
+    response = client.get(f"/movimientos/{id_movimiento}")
+    assert response.status_code == 200
+    assert response.json()["id"] == 1
+
+
+def test_consultar_movimiento_not_found():
+    id_movimiento = 1123
+    response = client.get(f"/movimientos/{id_movimiento}")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Movimiento not found"
