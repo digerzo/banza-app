@@ -34,6 +34,7 @@ def test_crear_modelo_completo():
 
 
 def test_crear_movimiento_desde_db():
+    """Test class method para crear un movimiento del dominio a partir de un modelo sqlalchemy"""
     db_movimiento = orm.Movimiento(
         id=1, id_cuenta=1, tipo="INGRESO", importe=1000.0, fecha=datetime.now()
     )
@@ -42,6 +43,7 @@ def test_crear_movimiento_desde_db():
     assert movimiento.tipo.value == "INGRESO"
 
 def test_crear_cuenta_desde_db():
+    """Test class method para crear una cuenta del dominio a partir de un modelo sqlalchemy"""
     db_movimiento = orm.Movimiento(id=1, id_cuenta=1, tipo="INGRESO", importe=1000.0, fecha=datetime.now())
     db_cuenta = orm.Cuenta(id=1, id_cliente=1, movimientos=[db_movimiento])
     cuenta = Cuenta.crear_desde_db(db_cuenta)
@@ -49,16 +51,19 @@ def test_crear_cuenta_desde_db():
     assert len(cuenta.movimientos) == 1
 
 def test_saldo_cuenta(movimientos):
+    """Test calcular el saldo de una cuenta con dos movimientos funciona ok"""
     cuenta = Cuenta(id=1, id_cliente=1, movimientos=movimientos)
     assert cuenta.saldo() == 900.0
 
 def test_agregar_movimiento(movimientos):
+    """Test agregar un movimiento tipo EGRESO funciona ok mientras haya saldo disponible"""
     mov = Movimiento(id=1, id_cuenta=1, tipo=TipoMovimiento.EGRESO, importe=140, fecha=datetime.now())
     cuenta = Cuenta(id=1, id_cliente=1, movimientos=movimientos)
     cuenta.agregar_movimiento(mov)
     assert cuenta.saldo() == 760.0
 
 def test_agregar_movimiento_saldo_insuficiente(movimientos):
+    """Test agregar movimiento lanza exception de dominio cuando el saldo es insuficiente"""
     mov = Movimiento(id=1, id_cuenta=1, tipo=TipoMovimiento.EGRESO, importe=14000, fecha=datetime.now())
     cuenta = Cuenta(id=1, id_cliente=1, movimientos=movimientos)
     
