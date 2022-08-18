@@ -183,3 +183,18 @@ def test_consultar_movimiento_not_found():
     response = client.get(f"/movimientos/{id_movimiento}")
     assert response.status_code == 404
     assert response.json()["detail"] == "Movimiento not found"
+
+
+def test_eliminar_movimiento(popular_limpiar_db):
+    id_movimiento = 1
+    response = client.delete(f"/movimientos/{id_movimiento}")
+    assert response.status_code == 200
+    response = client.get(f"/moviemientos/{id_movimiento}")
+    assert response.status_code == 404
+
+
+def test_eliminar_movimiento_not_found():
+    id_movimiento = 1
+    response = client.delete(f"/movimientos/{id_movimiento}")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Movimiento not found"

@@ -41,3 +41,7 @@ def crear_movimiento(db: Session, movimiento: model.CrearMovimiento):
 
 def get_movimiento(db: Session, id_movimiento: int):
     return db.query(orm.Movimiento).filter(orm.Movimiento.id == id_movimiento).first()
+
+def eliminar_movimiento(db: Session, movimiento: orm.Movimiento):
+    db.delete(movimiento)
+    db.commit()

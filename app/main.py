@@ -107,3 +107,12 @@ def consultar_movimiento(id_movimiento: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Movimiento not found")
 
     return db_movimiento
+
+
+@app.delete("/movimientos/{id_movimiento}")
+def eliminar_movimiento(id_movimiento: int, db: Session = Depends(get_db)):
+    db_movimiento = crud.get_movimiento(db, id_movimiento)
+    if db_movimiento is None:
+        raise HTTPException(status_code=404, detail="Movimiento not found")
+    
+    return crud.eliminar_movimiento(db, db_movimiento)
