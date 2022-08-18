@@ -1,5 +1,8 @@
+from http import client
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
+
+from .adapter import ClientDolarSi
 
 from .exceptions import SaldoInsuficiente
 
@@ -132,3 +135,11 @@ def eliminar_movimiento(id_movimiento: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Movimiento not found")
     
     return crud.eliminar_movimiento(db, db_movimiento)
+
+
+@app.get("/cotizacion/")
+def get_cotizacion_dolar_bolsa():
+    """Test endpoint para probar obtener la cotizacion Dolar Bolsa de """
+    client = ClientDolarSi()
+    cotizacion = client.get_cotizacion_dolar_bolsa()
+    return {"venta_dolar_bolsa": cotizacion}
