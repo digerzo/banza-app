@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from enum import Enum
 
-from app import orm
+from .exceptions import SaldoInsuficiente
 
 
 class TipoMovimiento(Enum):
@@ -48,17 +48,40 @@ class Movimiento(MovimientoBase):
             fecha=db_movimiento.fecha
         )
 
+    def impacto(self) -> float:
+        return self.importe if self.tipo == TipoMovimiento.INGRESO else -self.importe        
 
 class CrearMovimiento(MovimientoBase):
     pass
 
 class Cuenta(BaseModel):
     """Modelo base de cuenta"""
-
+    id: int
+    id_cliente: int
     movimientos: list[Movimiento] = []
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def crear_desde_db(cls, db_cuenta):
+        return Cuenta(
+            id=db_cuenta.id,
+            id_cliente=db_cuenta.id_cliente,
+            movimientos=[
+                Movimiento.crear_desde_db(movimiento)
+                for movimiento in db_cuenta.movimientos
+            ]
+        )
+    
+    def saldo(self) -> float:
+        return sum([movimiento.impacto() for movimiento in self.movimientos])
+    
+    def agregar_movimiento(self, moviemiento: Movimiento):
+        if self.saldo() + moviemiento.impacto() < 0:
+            raise SaldoInsuficiente
+        else:
+            self.movimientos.append(moviemiento)
 
 
 class ClienteBase(BaseModel):
