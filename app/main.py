@@ -143,3 +143,23 @@ def get_cotizacion_dolar_bolsa():
     client = ClientDolarSi()
     cotizacion = client.get_cotizacion_dolar_bolsa()
     return {"venta_dolar_bolsa": cotizacion}
+
+
+@app.get("/iniciardb/")
+def inicializar_db(db: Session = Depends(get_db)):
+    """Endpoint de testing para inicializar la db"""
+    categorias = [
+        orm.Categoria(id=1, nombre="Bronce"),
+        orm.Categoria(id=2, nombre="Silver"),
+        orm.Categoria(id=3, nombre="Gold")
+    ]
+    for cat in categorias:
+        db.add(cat)
+    db.commit()
+    cliente = orm.Cliente(id=100, nombre="Agustin", categorias=[categorias[0]])
+    db.add(cliente)
+    db.commit()
+    cuenta = orm.Cuenta(id=100, id_cliente=100)
+    db.add(cuenta)
+    db.commit()
+    return {"resultado": "ok"}
