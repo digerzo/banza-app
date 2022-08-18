@@ -16,6 +16,9 @@ Para el desarrollo de este challenge utilice:
 3) Activar el interprete
 >$ source .env/Scripts/activate
 
+4) Instalar dependencias
+>$ pip install -r requirements.txt
+
 ### Correr tests
 Para el testing utilice pytest, por lo que con el entorno activado:
 >$ pytest
@@ -26,4 +29,10 @@ Para levantar la app utilicce [uvicorn](https://www.uvicorn.org/) como ASGI web 
 
 ## Docker
 
-TBD -> la idea es proporcionar un docker compose para correr la app y con una db mysql
+Para buildear la imagen
+>$ docker build -t banza-app:0.1.0 .
+
+Para correr la app en un container
+>$ docker run -d --name api -p 80:80 banza-app:0.1.0
+
+TBD -> la idea es proporcionar un docker compose para correr la app con una db mysql
