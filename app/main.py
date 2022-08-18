@@ -24,13 +24,15 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/clientes/")
+@app.get("/clientes/", response_model=list[model.Cliente])
 def read_clientes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """Proporciona una lista con todos los clientes disponibles"""
     return crud.get_clientes(db=db, skip=skip, limit=limit)
 
 
 @app.get("/clientes/{id_cliente}", response_model=model.Cliente)
 def obtener_cliente(id_cliente: int, db: Session = Depends(get_db)):
+    """Obtiene un cliente en particular"""
     db_cliente = crud.get_cliente(db, id_cliente)
     if db_cliente is None:
         raise HTTPException(status_code=404, detail="Cliente not found")
@@ -39,11 +41,13 @@ def obtener_cliente(id_cliente: int, db: Session = Depends(get_db)):
 
 @app.post("/clientes/", response_model=model.Cliente)
 def crear_cliente(cliente: model.CrearCliente, db: Session = Depends(get_db)):
+    """Crea un cliente, devolviendo el mismo"""
     return crud.crear_cliente(db=db, cliente=cliente)
 
 
 @app.delete("/clientes/{id_cliente}")
 def eliminar_cliente(id_cliente: int, db: Session = Depends(get_db)):
+    """Elimina un cliente especifico"""
     db_cliente = crud.get_cliente(db, id_cliente)
     if db_cliente is None:
         raise HTTPException(status_code=404, detail="Cliente not found")
@@ -56,6 +60,7 @@ def agregar_cliente_categoria(
             agregar_categoria: model.AgregarClienteACategoria, 
             db: Session = Depends(get_db)
         ):
+    """Agrega un cliente a la categoria deseada"""
     db_cliente = crud.get_cliente(db, id_cliente)
     if db_cliente is None:
         raise HTTPException(status_code=404, detail="Cliente not found")
@@ -69,6 +74,7 @@ def agregar_cliente_categoria(
 
 @app.get("/clientes/{id_cliente}/cuentas/", response_model=list[model.Cuenta])
 def read_cliente_cuentas(id_cliente: int, db: Session = Depends(get_db)):
+    """Obtiene las cuentas de un cliente"""
     db_cliente = crud.get_cliente(db, id_cliente)
     if db_cliente is None:
         raise HTTPException(status_code=404, detail="Cliente not found")
@@ -78,6 +84,7 @@ def read_cliente_cuentas(id_cliente: int, db: Session = Depends(get_db)):
 
 @app.get("/clientes/{id_cliente}/cuentas/{id_cuenta}/saldo/", response_model=model.CuentaConSaldo)
 def consultar_saldo_cuenta_cliente(id_cliente: int, id_cuenta: int, db: Session = Depends(get_db)):
+    """Obtiene el saldo de una cuenta de un cliente"""
     db_cliente = crud.get_cliente(db, id_cliente)
     if db_cliente is None:
         raise HTTPException(status_code=404, detail="Cliente not found")
@@ -93,6 +100,7 @@ def consultar_saldo_cuenta_cliente(id_cliente: int, id_cuenta: int, db: Session 
 
 @app.post("/movimientos/", response_model=model.Movimiento)
 def registrar_movimiento(movimiento: model.CrearMovimiento, db: Session = Depends(get_db)):
+    """Registra un nuevo movimiento"""
     db_cuenta = crud.get_cuenta(db, movimiento.id_cuenta)
     if db_cuenta is None:
         raise HTTPException(status_code=404, detail="Cuenta not found")
@@ -108,6 +116,7 @@ def registrar_movimiento(movimiento: model.CrearMovimiento, db: Session = Depend
 
 @app.get("/movimientos/{id_movimiento}", response_model=model.Movimiento)
 def consultar_movimiento(id_movimiento: int, db: Session = Depends(get_db)):
+    """Obtiene un movimiento especifico"""
     db_movimiento = crud.get_movimiento(db, id_movimiento)
     if db_movimiento is None:
         raise HTTPException(status_code=404, detail="Movimiento not found")
@@ -117,6 +126,7 @@ def consultar_movimiento(id_movimiento: int, db: Session = Depends(get_db)):
 
 @app.delete("/movimientos/{id_movimiento}")
 def eliminar_movimiento(id_movimiento: int, db: Session = Depends(get_db)):
+    """Elimina un movimiento especifico"""
     db_movimiento = crud.get_movimiento(db, id_movimiento)
     if db_movimiento is None:
         raise HTTPException(status_code=404, detail="Movimiento not found")
