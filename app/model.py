@@ -4,6 +4,8 @@ from datetime import datetime
 from pydantic import BaseModel
 from enum import Enum
 
+from app import orm
+
 
 class TipoMovimiento(Enum):
     """Tipos de movimiento asociados a una cuenta"""
@@ -35,6 +37,16 @@ class Movimiento(MovimientoBase):
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def crear_desde_db(cls, db_movimiento):
+        return Movimiento(
+            id=db_movimiento.id,
+            id_cuenta=db_movimiento.id_cuenta,
+            tipo=TipoMovimiento(db_movimiento.tipo),
+            importe=db_movimiento.importe,
+            fecha=db_movimiento.fecha
+        )
 
 
 class CrearMovimiento(MovimientoBase):
