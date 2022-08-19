@@ -1,0 +1,36 @@
+version: "3.3"
+services:
+    db:
+        image: mysql:8.0
+        ports:
+            - 3306:3306
+        restart: always
+        environment:
+            MYSQL_DATABASE: "banza"
+            MYSQL_USER: "user"
+            MYSQL_PASSWORD: "password"
+            MYSQL_ROOT_PASSWORD: "password"
+        volumes:
+            - db:/var/lib/mysql
+        networks:
+            - db_network
+
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                SQLALCHEMY_DATABASE_URL: "mysql://root:password@localhost:3306/banza"
+        ports:
+            - 80:80
+        restart: always
+        depends_on:
+            - db
+        networks:
+            - db_network
+
+networks:
+    db_network:
+
+volumes:
+    db:

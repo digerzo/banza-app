@@ -17,7 +17,7 @@ class Cliente(Base):
     __tablename__ = "clientes"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String)
+    nombre = Column(String(255))
 
     categorias = relationship("Categoria", secondary=categoria_cliente)
     cuentas = relationship("Cuenta", back_populates="duenio")
@@ -47,4 +47,4 @@ class Categoria(Base):
     __tablename__ = "categorias"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String)
+    nombre = Column(String(255))

@@ -1,7 +1,7 @@
 """Modelos utilizados para el dominio"""
 
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum
 
 from .exceptions import SaldoInsuficiente
@@ -18,7 +18,7 @@ class Categoria(BaseModel):
     """Modelo base de categoría"""
 
     id: int
-    nombre: str
+    nombre: str = Field(..., max_length=255)
 
     class Config:
         orm_mode = True
@@ -103,7 +103,7 @@ class Cuenta(BaseModel):
 class ClienteBase(BaseModel):
     """Modelo base de cliente"""
 
-    nombre: str
+    nombre: str = Field(..., max_length=255)
 
 class CrearCliente(ClienteBase):
     """Modelo de cliente para ser creado""" 

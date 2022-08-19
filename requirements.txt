@@ -11,8 +11,10 @@ h11==0.13.0
 httptools==0.4.0
 idna==3.3
 iniconfig==1.1.1
+mysqlclient==2.1.1
 packaging==21.3
 pluggy==1.0.0
+protobuf==3.20.1
 py==1.11.0
 pydantic==1.9.2
 pyparsing==3.0.9
