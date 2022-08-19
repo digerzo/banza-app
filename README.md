@@ -35,4 +35,5 @@ Para buildear la imagen
 Para correr la app en un container
 >$ docker run -d --name api -p 80:80 banza-app:0.1.0
 
-TBD -> la idea es proporcionar un docker compose para correr la app con una db mysql
+Para correr la app en un container y en otro container una db mysql
+>$ docker-compose up
